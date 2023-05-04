@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="../../Static/bootstrap-5.3.0-alpha3-dist/css/bootstrap.css" crossorigin="anonymous" />
+    <link rel="stylesheet" href="./Style/home_search.css" />
+
+    <script src="./Static/lib/anime.min.js"></script>
+    <script src="../../Static/jquery-3.6.4.min.js"></script>
+
+    <!-- jQuery CDN ของ Google -->
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script> -->
+
+    <title>EPT Real Estate</title>
+  </head>
+
+  <body>
+    <!-- Menu -->
+    <div class="menu">
+      <ul>
+        <li><a href="#">HOME</a></li>
+
+        <li class="dropdown_menu">
+          <a href="#">BUY</a>
+          <div class="dropdown_content">
+            <ul>
+              <li><a href="#">บ้าน</a></li>
+              <li><a href="#">คอนโด</a></li>
+              <li><a href="#">เชิงพาณิชย์</a></li>
+            </ul>
+          </div>
+        </li>
+
+        <li><a href="#">SELL</a></li>
+        <li><a href="#">SEARCH</a></li>
+        <li><a href="#">ABOUT US</a></li>
+        <li class="align_right_menu"><a href="#">LOGIN</a></li>
+      </ul>
+    </div>
+    <!-- Search -->
+    <div class="container1">
+      <div class="main">
+        <h1>ซื้อ ขาย อสังหา ในประเทศไทย</h1>
+        <b>เราช่วยคุนหาบ้าน และที่ดินที่ถูกใจ</b>
+        <div class="search_box">
+          <form action="" onsubmit="return onSearch()">
+            <input type="text" name="keyword" id="search_text" />
+            <select name="property_type" id="">
+              <option value="">บ้าน</option>
+              <option value="">ที่ดิน</option>
+              <option value="">เชิงพาณิชย์</option>
+            </select>
+            <input type="submit" value="Search" />
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Property Detail -->
+    <div class="container2"></div>
+    <div class="container3"></div>
+    <div id="map"></div>
+
+    <script>
+      function itemTemplate(
+        id,
+        real_estate_name,
+        LOCATION,
+        property_type,
+        SALE_TERMS,
+        SALE_PRICE,
+        RENT_PRICE,
+        BEDROOMS,
+        UNIT_SIZE,
+        LAND_AREA,
+        image_01
+      ) {
+        let template = `
+                <div class="main2">
+                    <div class="image">
+                        <img src="{{{image_src}}}" alt="" srcset="" />
+                    </div>
+                    <div class="information">
+                        <p>{{{real_estate_name}}}</p>
+                        <p>สถานที่: {{{LOCATION}}}</p>
+                        <p>ชนิดหลักทรัพย์: {{{property_type}}}</p>
+                        <p>สิทธิ์การขาย: {{{SALE_TERMS}}}</p>
+                        <p>ราคาขาย: {{{SALE_PRICE}}}</p>
+                        <p>ราคาเช่า: {{{RENT_PRICE}}}</p>
+                        <p>จำนวนห้องนอน: {{{BEDROOMS}}}</p>
+                        <p>ตารางเมตร: {{{UNIT_SIZE}}}</p>
+                        <p>ตารางวา: {{{LAND_AREA}}}</p>
+                        <p>
+                            <button id="{{{btn_id}}}" 
+                                    class="select_prop_btn btn btn-primary" 
+                                    propertyID= "{{{prop_id}}}">แสดงรายละเอียด</button>
+                        </p>
+                    </div>
+                </div>`;
+
+        template = template.replaceAll("{{{image_src}}}", image_01);
+        template = template.replaceAll("{{{real_estate_name}}}", real_estate_name);
+        template = template.replaceAll("{{{LOCATION}}}", LOCATION);
+        template = template.replaceAll("{{{property_type}}}", property_type);
+        template = template.replaceAll("{{{SALE_TERMS}}}", SALE_TERMS);
+        template = template.replaceAll("{{{SALE_PRICE}}}", SALE_PRICE);
+        template = template.replaceAll("{{{RENT_PRICE}}}", RENT_PRICE);
+        template = template.replaceAll("{{{BEDROOMS}}}", BEDROOMS);
+        template = template.replaceAll("{{{UNIT_SIZE}}}", UNIT_SIZE);
+        template = template.replaceAll("{{{LAND_AREA}}}", LAND_AREA);
+        template = template.replaceAll("{{{btn_id}}}", "property_id_" + id);
+
+        template = template.replaceAll("{{{prop_id}}}", id);
+
+        return template;
+      }
+
+      function onOpenPropertyDetail(id) {
+        let propertyID = id;
+        $.getJSON(
+          "https://expert-programming-tutor.com/Downloads/w701/property_detail.php?id=" + propertyID,
+          function (data) {
+            var items = [];
+            $.each(data, function (key, val) {
+                console.log("key: "+key+" value: "+val);
+                if (key.indexOf("image") >= 0) {
+                    
+                }else{
+                    items.push(
+                      "<div class= 'info_item' id= 'table_" + key +"'>" +
+                      "<div class='item_key'>" + key + ":</div>" +
+                      "<div class='item_value'>" + val + "</div>" +
+                      "</div>"
+                    );
+                }
+            });
+
+            $(".container3").html("");
+
+            $("<div />", {
+              class: "my-info-list",
+              html: items.join("\r\n"),
+            }).appendTo(".container3");
+
+            var items_image = [];
+            items_image.push(`<div><img src="` + data.image_01 + `"alt="image_property" /></div>`);
+            items_image.push(`<div><img src="` + data.image_02 + `"alt="image_property" /></div>`);
+            items_image.push(`<div><img src="` + data.image_03 + `"alt="image_property" /></div>`);
+            items_image.push(`<div><img src="` + data.image_04 + `"alt="image_property" /></div>`);
+            items_image.push(`<div><img src="` + data.image_05 + `"alt="image_property" /></div>`);
+
+            $("<div />", {
+              class: "property_image",
+              html: items_image.join("\r\n"),
+            }).appendTo(".container3");
+
+            initMap(data.lat, data.lon);
+          }
+        );
+      }
+
+      function onSearch() {
+        $(".container2").html("");
+        $(".container2").height(100 + "px");
+        let search_text = $("#search_text").val();
+        console.log("onSearch(): " + search_text);
+
+        $.getJSON(
+          "https://expert-programming-tutor.com/Downloads/w701/property_search.php?locate=" + search_text,
+          function (data) {
+            let y_position = 0;
+            for (let i = 0; i < data.length; i++) {
+              let temp = itemTemplate(
+                data[i].id,
+                data[i].real_estate_name,
+                data[i].LOCATION,
+                data[i].property_type,
+                data[i].SALE_TERMS,
+                data[i].SALE_PRICE,
+                data[i].RENT_PRICE,
+                data[i].BEDROOMS,
+                data[i].UNIT_SIZE,
+                data[i].LAND_AREA,
+                data[i].image_01
+              );
+
+              $(".container2").append(temp);
+            }
+
+            $(".select_prop_btn").each(function () {
+              $(this).click(function () {
+                let propID = $(this).attr("propertyID");
+                onOpenPropertyDetail(propID);
+              });
+            });
+            $(".container2").height(y_position + 100 + "px");
+          }
+        );
+
+        return false;
+      }
+
+      function resize_container2() {
+        $(".container2").height(100 + "px");
+        let y_position = 0;
+        $(".select_prop_btn").each(function () {
+          var elem = $(this);
+          var pos = elem.offset().top - elem.parent().parent().parent().parent().offset().top;
+          if (y_position < pos) {
+            y_position = pos;
+          }
+        });
+        $(".container2").height(y_position + 250 + "px");
+      }
+
+      var timeline_main = anime
+        .timeline({
+          easing: "easeOutElastic(5,5)",
+          duration: 800,
+        })
+        .add({
+          targets: ".main",
+          translateY: 50,
+          opacity: [0, 1],
+          rotate: "2turn",
+          backgroundColor: "hotpink",
+          duration: 800,
+          delay: 800,
+        })
+        .add({
+          targets: "main",
+          translateY: 0,
+          duration: 200,
+          delay: 800,
+        });
+
+      $(document).ready(function () {
+        let menu_height = $(".menu").height();
+        let window_height = $(window).height();
+        let image_height = window_height - menu_height;
+        $(".container1").height(image_height);
+
+        // Resize Background
+        $(window).resize(function () {
+          let menu_height = $(".menu").height();
+          let window_height = $(window).height();
+          let image_height = window_height - menu_height;
+          $(".container1").height(image_height);
+
+          resize_container2();
+        });
+
+        var animationForMain2 = function () {
+          let y_translate = 50;
+          if ($(".main2").length > 0) {
+            if ($(".main2").attr("animation_finish") == 1) {
+            } else {
+              if ($(".main2").length > 0) {
+                $(".main2").attr("animation_finish", 1);
+                let height = parseInt($(".container2").css("height"), 10);
+                let elMargin = parseInt($(".main2").css("margin-top"), 10);
+                $(".container2").height(height + y_translate + elMargin + 100 + "px");
+
+                var timeLine = anime
+                  .timeline({
+                    easing: "easeOutElastic(5, 5)",
+                    duration: 800,
+                  })
+                  .add({
+                    targets: ".main2",
+                    translateY: y_translate,
+                    opacity: [0, 1],
+                    rotate: "1turn",
+                    backgroundColor: "#FFFFFF",
+                  });
+
+                timeLine.finished.then(function () {
+                  resize_container2();
+                });
+              }
+            }
+          }
+        };
+
+        // Trigger event when user scroll to specific element - with jQuery
+        $(window).scroll(function () {
+          if ($(".main2").length > 0) {
+            var hT = $(".main2").offset().top,
+              hH = $(".main2").outerHeight(),
+              wH = $(window).height(),
+              wS = $(this).scrollTop();
+            if (wS > hT + hH - wH) {
+              console.log("H1 on the view!");
+              animationForMain2();
+            }
+          }
+        });
+      });
+
+      // GOOGLE Maps
+      // In this example, we center the map, and add a marker, using a LatLng object
+      // literal instead of a google.maps.LatLng object. LatLng object literals are
+      // a convenient way to add a LatLng coordinate and, in most cases, can be used
+      // in place of a google.maps.LatLng object.
+      let map;
+
+      function initMap(xlat, xlong) {
+        const mapOptions = {
+          zoom: 14,
+          center: { lat: xlat, lng: xlong },
+        };
+
+        map = new google.maps.Map(document.getElementById("map"), mapOptions);
+
+        const marker = new google.maps.Marker({
+          // The below line is equivalent to writing:
+          // position: new google.maps.LatLng(-34.397, 150.644)
+          position: { lat: xlat, lng: xlong },
+          map: map,
+        });
+        // You can use a LatLng literal in place of a google.maps.LatLng object when
+        // creating the Marker object. Once the Marker object is instantiated, its
+        // position will be available as a google.maps.LatLng object. In this case,
+        // we retrieve the marker's position using the
+        // google.maps.LatLng.getPosition() method.
+        const infowindow = new google.maps.InfoWindow({
+          content: "<p>Marker Location:" + marker.getPosition() + "</p>",
+        });
+
+        google.maps.event.addListener(marker, "click", () => {
+          infowindow.open(map, marker);
+        });
+      }
+
+      window.initMap = initMap;
+    </script>
+
+    <script src="../../Static/bootstrap-5.3.0-alpha3-dist/js/bootstrap.bundle.js"></script>
+
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAyovlEXYKiKK0K62_iNZjyrB94EQ97MUk&callback=initMap&v=weekly"
+      defer
+    ></script>
+  </body>
+</html>

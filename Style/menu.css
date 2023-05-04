@@ -1,0 +1,97 @@
+@font-face {
+  font-family: roboto;
+  src: url(../Static/font/Roboto/Roboto-Medium.ttf);
+}
+
+body {
+  margin: 0px;
+  padding: 0px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+ul {
+  margin: 0px;
+  padding: 0px;
+  list-style-type: none;
+  top: 0px;
+  overflow: hidden;
+  height: 100%;
+}
+
+li {
+  display: inline-block;
+  width: 100px;
+  text-align: center;
+  margin: 0px 5px;
+  padding: 15px 0px;
+
+  /* top: 0px; */
+  /* height: 100%; */
+}
+
+li:hover {
+  background-color: chocolate;
+}
+
+li a {
+  text-decoration: none;
+  color: rgb(254, 239, 220);
+  padding: 15px 10px;
+  font-family: roboto;
+}
+
+li:hover a {
+  color: black;
+  text-shadow: 2px 2px 2px darkgoldenrod;
+}
+
+.menu {
+  /* background-color: rgb(228, 192, 104); */
+  background-color: Sienna;
+  border: 1px solid Sienna;
+  /* padding: 12px 10px; */
+}
+
+.align_right_menu {
+  float: right;
+}
+
+/* Dropdown */
+.dropdown_menu {
+  margin: 0px;
+}
+
+.dropdown_menu:hover .dropdown_content {
+  background-color: Sienna;
+  display: block;
+}
+
+.dropdown_menu .dropdown_content li:hover a {
+  color: black;
+}
+
+.dropdown_content {
+  /* background-color: rgb(234, 148, 82); */
+  display: none;
+  position: absolute;
+  margin-top: 15px;
+  background-color: inherit;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.dropdown_content ul li {
+  display: block;
+  margin: 0px;
+  padding: 0px;
+}
+
+.dropdown_content ul li a {
+  display: block;
+  color: rgb(254, 239, 220);
+  margin: 0px;
+  text-align: start;
+  /* padding: 15px 15px; */
+}
